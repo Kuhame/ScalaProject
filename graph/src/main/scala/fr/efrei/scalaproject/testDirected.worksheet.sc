@@ -18,3 +18,9 @@ val neighborsOfA = directedGraph.neighbors("A")
 
 val json = update.toJson
 println(s"Graph as JSON: $json")
+
+val decodedGraph = json.fromJson[DirectedGraph[String]]
+decodedGraph match {
+  case Right(graph) => println(s"Decoded Graph: $graph")
+  case Left(error)  => println(s"Decoding error: $error")
+}

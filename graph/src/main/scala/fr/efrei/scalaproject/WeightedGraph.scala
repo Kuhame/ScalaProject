@@ -3,6 +3,16 @@ import zio.json._
 
 case class WeightedEdge[V](to: V, weight: Int)
 
+object WeightedEdge {
+  implicit def encoder[V: JsonEncoder: JsonFieldEncoder]
+      : JsonEncoder[WeightedEdge[V]] =
+    DeriveJsonEncoder.gen[WeightedEdge[V]]
+
+  implicit def decoder[V: JsonDecoder: JsonFieldDecoder]
+      : JsonDecoder[WeightedEdge[V]] =
+    DeriveJsonDecoder.gen[WeightedEdge[V]]
+}
+
 final case class WeightedGraph[V](adjList: Map[V, Set[WeightedEdge[V]]])
     extends Graph[V] {
 
@@ -20,8 +30,7 @@ final case class WeightedGraph[V](adjList: Map[V, Set[WeightedEdge[V]]])
   def neighbors(vertex: V): Set[V] = {
     // outgoing and incoming edges
     val outgoing = adjList.getOrElse(vertex, Set()).map(_.to)
-    val incoming = adjList.filter(_._2.map(_.to).contains(vertex)).keySet
-    outgoing ++ incoming
+    outgoing
   }
 
   def addEdge(from: V, to: V): WeightedGraph[V] = {
@@ -38,16 +47,6 @@ final case class WeightedGraph[V](adjList: Map[V, Set[WeightedEdge[V]]])
     new WeightedGraph(adjList + (from -> updatedEdges))
   }
 
-}
-
-object WeightedEdge {
-  implicit def encoder[V: JsonEncoder: JsonFieldEncoder]
-      : JsonEncoder[WeightedEdge[V]] =
-    DeriveJsonEncoder.gen[WeightedEdge[V]]
-
-  implicit def decoder[V: JsonDecoder: JsonFieldDecoder]
-      : JsonDecoder[WeightedEdge[V]] =
-    DeriveJsonDecoder.gen[WeightedEdge[V]]
 }
 
 object WeightedGraph {

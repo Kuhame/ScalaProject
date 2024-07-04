@@ -13,10 +13,7 @@ final case class DirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
 
   def neighbors(vertex: V): Set[V] = {
     val outgoing = adjList.getOrElse(vertex, Set())
-    // Does it takes also incoming edges?
-    val incoming = adjList.filter(_._2.contains(vertex)).keySet
-    outgoing ++ incoming
-
+    outgoing
   }
 
   def addEdge(from: V, to: V): DirectedGraph[V] = {

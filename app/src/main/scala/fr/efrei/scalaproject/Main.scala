@@ -40,6 +40,7 @@ object Main extends ZIOAppDefault {
     } yield()
 
     // Handler of Menu A
+    // les *> permettent de renvoyer vers un autre menu après l'exécution de la première
     def blankMenu(choice: String): UIO[Unit] = choice.trim match {
       case "1" => getAllVertices *> handleCreateBlankGraph
       case "2" => getAllEdges *> handleCreateBlankGraph

@@ -1,4 +1,5 @@
 import fr.efrei.scalaproject.graph.{DirectedGraph}
+import zio.json._
 
 val directedGraph = DirectedGraph[String]()
   .addEdge("A", "B")
@@ -14,3 +15,6 @@ val update = directedGraph.removeEdge("A", "B")
 println(update.edges)
 
 val neighborsOfA = directedGraph.neighbors("A")
+
+val json = update.toJson
+println(s"Graph as JSON: $json")

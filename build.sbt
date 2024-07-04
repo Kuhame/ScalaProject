@@ -9,7 +9,8 @@ lazy val graph = project
   .settings(
     name := "graph",
     libraryDependencies += "org.scalatest" %% "scalatest" % scalaTestVersion % Test,
-    libraryDependencies += "org.scalatest" %% "scalatest-flatspec" % scalaTestVersion % Test
+    libraryDependencies += "org.scalatest" %% "scalatest-flatspec" % scalaTestVersion % Test,
+    libraryDependencies += "dev.zio" %% "zio-json" % "0.7.1"
   )
 
 lazy val app = project

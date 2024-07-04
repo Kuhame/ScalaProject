@@ -25,6 +25,15 @@ final case class DirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
     val updatedEdges = adjList.getOrElse(from, Set()) - to
     new DirectedGraph(adjList + (from -> updatedEdges))
   }
+
+  def toDot(): String = {
+    val edges = adjList.foldLeft("") { case (acc, (vertex, neighbors)) =>
+      acc + neighbors.foldLeft("") { case (acc, neighbor) =>
+        acc + s"$vertex -> $neighbor;\n"
+      }
+    }
+    s"digraph G {\n$edges}"
+  }
 }
 
 object DirectedGraph {

@@ -47,6 +47,15 @@ final case class WeightedGraph[V](adjList: Map[V, Set[WeightedEdge[V]]])
     new WeightedGraph(adjList + (from -> updatedEdges))
   }
 
+  def toDot(): String = {
+    val edges = adjList.foldLeft("") { case (acc, (vertex, neighbors)) =>
+      acc + neighbors.foldLeft("") { case (acc, neighbor) =>
+        acc + s"$vertex -> ${neighbor.to} [label=${neighbor.weight}];\n"
+      }
+    }
+    s"digraph G {\n$edges}"
+  }
+
 }
 
 object WeightedGraph {

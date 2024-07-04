@@ -1,4 +1,5 @@
 import fr.efrei.scalaproject.graph.{DirectedGraph}
+
 import zio.json._
 
 val directedGraph = DirectedGraph[String]()
@@ -24,3 +25,5 @@ decodedGraph match {
   case Right(graph) => println(s"Decoded Graph: $graph")
   case Left(error)  => println(s"Decoding error: $error")
 }
+
+println(update.toDot())

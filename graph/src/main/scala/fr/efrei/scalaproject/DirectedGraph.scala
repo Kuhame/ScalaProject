@@ -13,10 +13,7 @@ final case class DirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
 
   def neighbors(vertex: V): Set[V] = {
     val outgoing = adjList.getOrElse(vertex, Set())
-    // Does it takes also incoming edges?
-    val incoming = adjList.filter(_._2.contains(vertex)).keySet
-    outgoing ++ incoming
-
+    outgoing
   }
 
   def addEdge(from: V, to: V): DirectedGraph[V] = {
@@ -27,6 +24,15 @@ final case class DirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
   def removeEdge(from: V, to: V): DirectedGraph[V] = {
     val updatedEdges = adjList.getOrElse(from, Set()) - to
     new DirectedGraph(adjList + (from -> updatedEdges))
+  }
+
+  def toDot(): String = {
+    val edges = adjList.foldLeft("") { case (acc, (vertex, neighbors)) =>
+      acc + neighbors.foldLeft("") { case (acc, neighbor) =>
+        acc + s"$vertex -> $neighbor;\n"
+      }
+    }
+    s"digraph G {\n$edges}"
   }
 }
 

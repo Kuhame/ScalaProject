@@ -1,5 +1,6 @@
 package fr.efrei.scalaproject.graph
 import zio.json._
+import zio.json.ast.Json.Str
 
 final case class UndirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
   def vertices: Set[V] = adjList.keySet ++ adjList.values.flatten
@@ -29,6 +30,15 @@ final case class UndirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
     new UndirectedGraph(
       adjList + (from -> updatedEdgesFrom) + (to -> updatedEdgesTo)
     )
+  }
+
+  def toDot(): String = {
+    val edges = adjList.foldLeft("") { case (acc, (vertex, neighbors)) =>
+      acc + neighbors.foldLeft("") { case (acc, neighbor) =>
+        acc + s"$vertex -- $neighbor;\n"
+      }
+    }
+    s"graph G {\n$edges}"
   }
 
 }

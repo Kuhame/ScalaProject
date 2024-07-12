@@ -5,6 +5,7 @@ import fr.efrei.scalaproject.graph.DirectedGraph
 object Main extends ZIOAppDefault {
 
   val directedGraph = DirectedGraph[String]()
+  .addEdge("A", "B")
   def run =
     for {
         // Menu A-B

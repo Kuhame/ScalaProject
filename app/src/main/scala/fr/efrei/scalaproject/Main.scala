@@ -59,10 +59,15 @@ object Main extends ZIOAppDefault {
     Console.printLine(s"Fetching all vertices : ${directedGraph.vertices}").orDie
 
   def getAllEdges: UIO[Unit] =
-    Console.printLine("Fetching all edges...").orDie
+    Console.printLine(s"Fetching all edges : ${directedGraph.edges}").orDie
 
   def getNeighborsOfVertex: UIO[Unit] =
-    Console.printLine("Fetching neighbors of a vertex...").orDie
+    Console.printLine("Fetching neighbors of a vertex... : ").orDie
+    for {
+      _ <- Console.print("Enter vertex to get neighbors: ")
+      vertex <- Console.readLine.orDie
+      _ <- Console.printLine(s"Neighbors of $vertex: ${directedGraph.neighbors(vertex)}").orDie
+    } yield ()
 
   def addEdge: UIO[Unit] =
     Console.printLine(s"Adding an edge... ${directedGraph.addEdge}").orDie

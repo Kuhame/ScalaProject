@@ -9,7 +9,7 @@ object Main extends ZIOAppDefault {
 
   //diagramme à exploiter
   var directedGraph = DirectedGraph[String]()
-  .addEdge("A", "B")
+  
   def run =
     for {
         // Menu A-B
@@ -34,7 +34,7 @@ object Main extends ZIOAppDefault {
   for {
       _ <- Console.printLine(
       """
-        =====================
+      =====================
         |A-1: What to do?
         |1. Get all Vertices
         |2. Get all Edges

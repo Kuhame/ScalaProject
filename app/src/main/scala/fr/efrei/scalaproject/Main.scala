@@ -1,10 +1,13 @@
 
 import zio._
 import zio.Console._
+import zio.json._
 import fr.efrei.scalaproject.graph.DirectedGraph
+import java.io.IOException
+import java.nio.file.{Files,Paths}
 object Main extends ZIOAppDefault {
 
-  val directedGraph = DirectedGraph[String]()
+  var directedGraph = DirectedGraph[String]()
   .addEdge("A", "B")
   def run =
     for {
@@ -29,7 +32,9 @@ object Main extends ZIOAppDefault {
   def handleCreateBlankGraph: UIO[Unit] = 
   for {
       _ <- Console.printLine(
-      """A-1: What to do?
+      """
+        =====================
+        |A-1: What to do?
         |1. Get all Vertices
         |2. Get all Edges
         |3. Get neighbors of a Vertex
@@ -62,19 +67,44 @@ object Main extends ZIOAppDefault {
     Console.printLine(s"Fetching all edges : ${directedGraph.edges}").orDie
 
   def getNeighborsOfVertex: UIO[Unit] =
-    Console.printLine("Fetching neighbors of a vertex... : ").orDie
-    for {
+    (for {
       _ <- Console.print("Enter vertex to get neighbors: ")
       vertex <- Console.readLine.orDie
-      _ <- Console.printLine(s"Neighbors of $vertex: ${directedGraph.neighbors(vertex)}").orDie
-    } yield ()
+      _ <- Console.printLine(s"Neighbors of $vertex: ${directedGraph.neighbors(vertex)}")
+    } yield ()).orDie
 
   def addEdge: UIO[Unit] =
-    Console.printLine(s"Adding an edge... ${directedGraph.addEdge}").orDie
+    //Console.printLine(s"Adding an edge... ${directedGraph.addEdge}").orDie
+    (for {
+      _ <- Console.print("Enter vertexes to add an edge from: ...")
+      from <- Console.readLine.orDie
+      _ <- Console.print("Enter vertex to add edge to: ... ")
+      to <- Console.readLine.orDie
+      _ = directedGraph = directedGraph.addEdge(from, to)
+      _ <- Console.printLine(s"Edge added from $from to $to")
+    } yield ()).orDie
 
   def removeEdge: UIO[Unit] =
-    Console.printLine("Removing an edge...").orDie
+     (for {
+      _ <- Console.print("Remove an edge from vertex:...")
+      from <- Console.readLine.orDie
+      _ <- Console.print("Enter vertex to remove edge to: ")
+      to <- Console.readLine.orDie
+      _ = directedGraph = directedGraph.removeEdge(from, to)
+      _ <- Console.printLine(s"Edge removed from $from to $to")
+    } yield ()).orDie
+    
 
   def saveGraph: UIO[Unit] =
-    Console.printLine("Saving the graph as DOT and JSON...").orDie
+    (for {
+      _ <- Console.printLine("Saving the graph as DOT and JSON.")
+      dotFormat = directedGraph.toDot()
+      _ <- Console.printLine(s"Graph in DOT format:\n$dotFormat")
+      jsonFormat = directedGraph.toJson
+
+
+
+      
+    } yield ()).orDie
+
 }

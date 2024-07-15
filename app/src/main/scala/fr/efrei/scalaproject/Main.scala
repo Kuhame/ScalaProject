@@ -7,6 +7,7 @@ import java.io.IOException
 import java.nio.file.{Files,Paths}
 object Main extends ZIOAppDefault {
 
+  //diagramme à exploiter
   var directedGraph = DirectedGraph[String]()
   .addEdge("A", "B")
   def run =
@@ -102,7 +103,7 @@ object Main extends ZIOAppDefault {
       _ <- Console.printLine(s"Graph in DOT format:\n$dotFormat")
       jsonFormat = directedGraph.toJson
 
-      //find folder and save files
+      //find folder and save files to graphsResults folder
       _ <- ZIO.attempt {
         val currentDir = Paths.get("").toAbsolutePath
         val graphsDir = currentDir.resolve("app/src/main/scala/fr/efrei/scalaproject/graphsResults")

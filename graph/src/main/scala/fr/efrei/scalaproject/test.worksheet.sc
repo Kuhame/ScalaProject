@@ -1,4 +1,4 @@
-import fr.efrei.scalaproject.graph.{DirectedGraph}
+import fr.efrei.scalaproject.graph.{DirectedGraph, DFS}
 
 import zio.json._
 
@@ -27,3 +27,6 @@ decodedGraph match {
 }
 
 println(update.toDot())
+
+val dfs = DFS.dfs(directedGraph, "blabla")
+print(dfs)

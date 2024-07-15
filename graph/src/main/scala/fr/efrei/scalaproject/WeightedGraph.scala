@@ -28,7 +28,6 @@ final case class WeightedGraph[V](adjList: Map[V, Set[WeightedEdge[V]]])
     .toSet
 
   def neighbors(vertex: V): Set[V] = {
-    // outgoing and incoming edges
     val outgoing = adjList.getOrElse(vertex, Set()).map(_.to)
     outgoing
   }

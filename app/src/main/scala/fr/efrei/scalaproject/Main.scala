@@ -9,7 +9,9 @@ object Main extends ZIOAppDefault {
 
   //diagramme à exploiter
   var directedGraph = DirectedGraph[String]()
-  
+  var loadedFilePath: Option[String] = None
+
+
   def run =
     for {
         // Menu A-B
@@ -24,7 +26,7 @@ object Main extends ZIOAppDefault {
   // Handler of Menu A-B
   def handleFirstChoice(choice: String): UIO[Unit] = choice.trim.toUpperCase match {
   case "A" => handleCreateBlankGraph
-  //case "B" => handleUseExistingGraph
+  case "B" => handleUseExistingGraph.orDie
   case _   => Console.printLine(s"Invalid choice: $choice").orDie
   }
 

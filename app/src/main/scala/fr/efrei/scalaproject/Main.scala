@@ -102,9 +102,15 @@ object Main extends ZIOAppDefault {
       _ <- Console.printLine(s"Graph in DOT format:\n$dotFormat")
       jsonFormat = directedGraph.toJson
 
+      //find folder and save files
+      _ <- ZIO.attempt {
+        val currentDir = Paths.get("").toAbsolutePath
+        val graphsDir = currentDir.resolve("app/src/main/scala/fr/efrei/scalaproject/graphsResults")
+        if (!Files.exists(graphsDir)) Files.createDirectories(graphsDir)
+        Files.write(graphsDir.resolve("graph.dot"), dotFormat.getBytes)
+        Files.write(graphsDir.resolve("graph.json"), jsonFormat.getBytes)
+      }.orDie
 
-
-      
     } yield ()).orDie
 
 }

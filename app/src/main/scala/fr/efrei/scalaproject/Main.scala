@@ -33,16 +33,16 @@ object Main extends ZIOAppDefault {
   def handleCreateBlankGraph: UIO[Unit] = 
   for {
       _ <- Console.printLine(
-      """
-      =====================
-        |A-1: What to do?
-        |1. Get all Vertices
-        |2. Get all Edges
-        |3. Get neighbors of a Vertex
-        |4. Add Edge
-        |5. Remove Edge
-        |6. Save as Graph (DOT + JSON)
-      """.stripMargin
+        """
+        =====================
+          |A-1: What to do?
+          |1. Get all Vertices
+          |2. Get all Edges
+          |3. Get neighbors of a Vertex
+          |4. Add Edge
+          |5. Remove Edge
+          |6. Save as Graph (DOT + JSON)
+        """.stripMargin
     ).orDie
     subChoice <- Console.readLine.orDie
     _ <- blankMenu(subChoice)

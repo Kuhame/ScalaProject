@@ -9,7 +9,9 @@ object Main extends ZIOAppDefault {
 
   //diagramme à exploiter
   var directedGraph = DirectedGraph[String]()
-  .addEdge("A", "B")
+  var loadedFilePath: Option[String] = None
+
+
   def run =
     for {
         // Menu A-B
@@ -24,7 +26,7 @@ object Main extends ZIOAppDefault {
   // Handler of Menu A-B
   def handleFirstChoice(choice: String): UIO[Unit] = choice.trim.toUpperCase match {
   case "A" => handleCreateBlankGraph
-  //case "B" => handleUseExistingGraph
+  case "B" => handleUseExistingGraph.orDie
   case _   => Console.printLine(s"Invalid choice: $choice").orDie
   }
 
@@ -33,16 +35,16 @@ object Main extends ZIOAppDefault {
   def handleCreateBlankGraph: UIO[Unit] = 
   for {
       _ <- Console.printLine(
-      """
+        """
         =====================
-        |A-1: What to do?
-        |1. Get all Vertices
-        |2. Get all Edges
-        |3. Get neighbors of a Vertex
-        |4. Add Edge
-        |5. Remove Edge
-        |6. Save as Graph (DOT + JSON)
-      """.stripMargin
+          |A-1: What to do?
+          |1. Get all Vertices
+          |2. Get all Edges
+          |3. Get neighbors of a Vertex
+          |4. Add Edge
+          |5. Remove Edge
+          |6. Save as Graph (DOT + JSON)
+        """.stripMargin
     ).orDie
     subChoice <- Console.readLine.orDie
     _ <- blankMenu(subChoice)
@@ -59,6 +61,76 @@ object Main extends ZIOAppDefault {
     case "6" => saveGraph 
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> handleCreateBlankGraph
   }
+
+
+  // B. Use existing Graph
+  def handleUseExistingGraph: IO[IOException, Unit] =
+    for {
+      _ <- Console.printLine("Enter the path to the DOT file:")
+      path <- Console.readLine.orDie
+      _ <- loadGraphFromDot(path)
+      _ = loadedFilePath = Some(path) // Store the file path
+      _ <- useExistingGraphMenu
+    } yield ()
+
+  //voici a quoi doit ressembler le path du fichier dot : D:/scala/graph.dot
+  //bien se rassurer que le fihier soit bien un fichier dot
+
+  def loadGraphFromDot(path: String): IO[IOException, Unit] =
+    for {
+      content <- ZIO.attempt(Files.readString(Paths.get(path))).refineToOrDie[IOException]
+      lines = content.split("\n").filter(_.trim.nonEmpty) // Filter out empty lines
+      _ <- ZIO.foreachDiscard(lines)(parseAndAddEdge)
+    } yield ()
+
+  val edgePattern = "([A-Za-z0-9]+) -> ([A-Za-z0-9]+);".r
+
+  def parseAndAddEdge(line: String): UIO[Unit] =
+    line.trim match {
+      case edgePattern(from, to) => ZIO.succeed {
+        directedGraph = directedGraph.addEdge(from, to)
+      }
+      case _ => ZIO.unit
+    }
+
+  def useExistingGraphMenu: UIO[Unit] =
+    for {
+      _ <- Console.printLine(
+        """
+        =====================
+          |B-1: What to do?
+          |1. Get all Vertices
+          |2. Get all Edges
+          |3. Get neighbors of a Vertex
+          |4. Add Edge
+          |5. Remove Edge
+          |6. Save as Graph (DOT + JSON)
+        """.stripMargin
+      ).orDie
+      subChoice <- Console.readLine.orDie
+      _ <- useMenu(subChoice)
+    } yield ()
+
+  def useMenu(choice: String): UIO[Unit] = choice.trim match {
+    case "1" => getAllVertices *> useExistingGraphMenu
+    case "2" => getAllEdges *> useExistingGraphMenu
+    case "3" => getNeighborsOfVertex *> useExistingGraphMenu
+    case "4" => addEdge *> saveLoadedGraph *> useExistingGraphMenu
+    case "5" => removeEdge *> saveLoadedGraph *> useExistingGraphMenu
+    case "6" => saveGraph
+    case _   => Console.printLine(s"Invalid choice: $choice").orDie *> useExistingGraphMenu
+  }
+
+  def displayGraph: UIO[Unit] = Console.printLine(directedGraph.toDot()).orDie
+
+  def saveLoadedGraph: UIO[Unit] = loadedFilePath match {
+    case Some(path) =>
+      val dotFormat = directedGraph.toDot()
+      ZIO.attempt(Files.writeString(Paths.get(path), dotFormat)).orDie *>
+        Console.printLine(s"Graph saved to $path").orDie
+    case None => Console.printLine("No file loaded to save").orDie
+  }
+
 
   // Handler of Menu A-1 : What to Do ?
   def getAllVertices: UIO[Unit] =

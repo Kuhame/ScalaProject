@@ -1,4 +1,4 @@
 digraph G {
 A -> B;
-B -> Z;
+V -> C;
 }

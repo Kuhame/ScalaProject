@@ -39,4 +39,4 @@ We can think about storing graphs to a SQLite database (or similar) so that we h
 ZIO have immutable data structure such as Ref or STM, that can help with functionnal purity and thread-safety. ZIO's primitives can also handle multiple user inputs if the app-terminal need to be operated by multiple users at the same time.
 
 ### Graphic User Interface
-Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly customizable interface.
+Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface that can be easily customized to fit our needs later on.

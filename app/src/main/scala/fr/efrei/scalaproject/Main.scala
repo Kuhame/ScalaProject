@@ -5,6 +5,7 @@ import zio.json._
 import fr.efrei.scalaproject.graph.DirectedGraph
 import java.io.IOException
 import java.nio.file.{Files,Paths}
+import java.nio.file.NoSuchFileException
 object Main extends ZIOAppDefault {
 
   //diagramme à exploiter
@@ -68,9 +69,19 @@ object Main extends ZIOAppDefault {
     for {
       _ <- Console.printLine("Enter the path to the DOT file:")
       path <- Console.readLine.orDie
-      _ <- loadGraphFromDot(path)
-      _ = loadedFilePath = Some(path) // Store the file path
-      _ <- useExistingGraphMenu
+      _ <- if (path.trim.toLowerCase =="new") {
+        Console.printLine("Setting new graph ... ")
+        handleCreateBlankGraph
+      } else {
+        loadGraphFromDot(path).catchAll {
+          case _: NoSuchFileException => 
+            Console.printLine("Invalid path. File not found. Try again.") *> handleUseExistingGraph
+          case e: IOException => 
+            Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleUseExistingGraph
+        }
+        loadedFilePath = Some(path) // Store the file path
+        useExistingGraphMenu
+    }
     } yield ()
 
   //voici a quoi doit ressembler le path du fichier dot : D:/scala/graph.dot
@@ -147,14 +158,17 @@ object Main extends ZIOAppDefault {
     } yield ()).orDie
 
   def addEdge: UIO[Unit] =
-    //Console.printLine(s"Adding an edge... ${directedGraph.addEdge}").orDie
     (for {
       _ <- Console.print("Enter vertexes to add an edge from: ...")
       from <- Console.readLine.orDie
       _ <- Console.print("Enter vertex to add edge to: ... ")
       to <- Console.readLine.orDie
-      _ = directedGraph = directedGraph.addEdge(from, to)
-      _ <- Console.printLine(s"Edge added from $from to $to")
+       _ <- if (directedGraph.edges.exists(edge => edge._1 == from && edge._2 == to)) {
+           Console.printLine(s"(!) Edge from $from to $to already exists (!)").orDie
+         } else {
+           directedGraph = directedGraph.addEdge(from, to)
+           Console.printLine(s"Edge added from $from to $to").orDie
+         }
     } yield ()).orDie
 
   def removeEdge: UIO[Unit] =
@@ -163,8 +177,12 @@ object Main extends ZIOAppDefault {
       from <- Console.readLine.orDie
       _ <- Console.print("Enter vertex to remove edge to: ")
       to <- Console.readLine.orDie
-      _ = directedGraph = directedGraph.removeEdge(from, to)
-      _ <- Console.printLine(s"Edge removed from $from to $to")
+      _ <- if (directedGraph.edges.exists(edge => edge._1 == from && edge._2 == to)) {
+             directedGraph = directedGraph.removeEdge(from, to)
+             Console.printLine(s"Edge removed from $from to $to").orDie
+           } else {
+             Console.printLine(s"(!) Edge from $from to $to does not exist (!)").orDie
+           }
     } yield ()).orDie
     
 

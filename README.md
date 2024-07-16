@@ -15,7 +15,7 @@ For more information on the sbt-dotty plugin, see the
 This is a terminal-based app to edit graphs in DOT formats (can also be saved to JSON). Due to the simplicity of the app-terminal we tried to keep it easy to understand, so our approach to state management focused exclusively on important mechanisms such as : 
 
 ### User input Handling 
-The user is guided through the menus and the system ask which vertices, edges to add or remove, all of them have input prompt that highlight these operations. 
+The user is guided through the menus and the system ask which vertices, edges to add or remove, all of them have input prompt that highlight these operations. If he missclicked to "use existing graphs" he can type "new" in the path input instead, to create a new graph.
 
 ### Feedback
 User receive immediate feedback on these actions. Though some are minimized since we wanted to have each functions do exactly what it needs to do (addEdge is exclusively adding edge but don't return the new graph structure).

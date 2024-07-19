@@ -65,7 +65,7 @@ object Main extends ZIOAppDefault {
 
   def handleLoadDotFile(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
     for {
-      _ <- Console.printLine("Enter the path to the DOT file:")
+      _ <- Console.printLine("Enter the path to the DOT file (or type 'new' to create a blank)")
       path <- Console.readLine.orDie
       _ <- if (path.trim.toLowerCase == "new") {
         Console.printLine("Setting new graph ... ") *> handleCreateBlankGraph(directedGraph)
@@ -86,19 +86,27 @@ object Main extends ZIOAppDefault {
 
   def handleLoadJsonFile(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
     for {
-      _ <- Console.printLine("Enter the path to the JSON file:")
-      path <- Console.readLine.orDie
-      content <- ZIO.attempt(Files.readString(Paths.get(path))).refineToOrDie[IOException]
-      decodedGraph = content.fromJson[DirectedGraph[String]]
-      _ <- decodedGraph match {
-        case Right(graph) =>
-          Console.printLine(s"Decoded Graph: $graph").orDie *> {
-            directedGraph.set(graph) *> loadedFilePath.set(Some(path)) *> useExistingGraphMenu(directedGraph, loadedFilePath)
-          }
-        case Left(error) =>
-          Console.printLine(s"Decoding error: $error").orDie *> handleLoadJsonFile(directedGraph, loadedFilePath)
-      }
-    } yield ()
+    _ <- Console.printLine("Enter the path to the JSON file (or type 'new' to create a blank)")
+    path <- Console.readLine.orDie
+    _ <- if (path.trim.toLowerCase == "new") {
+      Console.printLine("Setting new graph...") *> useExistingGraphMenu(directedGraph, loadedFilePath)
+    } else {
+      for {
+        content <- ZIO.attempt(Files.readString(Paths.get(path))).refineToOrDie[IOException]
+        decodedGraph = content.fromJson[DirectedGraph[String]]
+        _ <- decodedGraph match {
+          case Right(graph) =>
+            Console.printLine(s"Decoded Graph: $graph").orDie *>
+              directedGraph.set(graph) *>
+              loadedFilePath.set(Some(path)) *>
+              useExistingGraphMenu(directedGraph, loadedFilePath)
+          case Left(error) =>
+            Console.printLine(s"Decoding error: $error. Please check the JSON format and try again.") *> 
+              handleLoadJsonFile(directedGraph, loadedFilePath)
+        }
+      } yield ()
+    }
+  } yield ()
 
   // Handler of Menu A
   def blankMenu(choice: String, directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] = choice.trim match {

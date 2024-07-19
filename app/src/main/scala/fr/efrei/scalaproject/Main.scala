@@ -45,6 +45,7 @@ object Main extends ZIOAppDefault {
           |4. Add Edge
           |5. Remove Edge
           |6. Save as Graph (DOT + JSON)
+          |7. Quit
         """.stripMargin
     ).orDie
     subChoice <- Console.readLine.orDie
@@ -59,7 +60,8 @@ object Main extends ZIOAppDefault {
     case "3" => getNeighborsOfVertex *> handleCreateBlankGraph
     case "4" => addEdge *> handleCreateBlankGraph
     case "5" => removeEdge  *> handleCreateBlankGraph
-    case "6" => saveGraph 
+    case "6" => saveGraph
+    case "7" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> handleCreateBlankGraph
   }
 
@@ -67,21 +69,55 @@ object Main extends ZIOAppDefault {
   // B. Use existing Graph
   def handleUseExistingGraph: IO[IOException, Unit] =
     for {
+      _ <- Console.printLine("Choose file type to load:")
+      _ <- Console.printLine("1. Load a DOT file")
+      _ <- Console.printLine("2. Load a JSON file")
+      fileTypeChoice <- Console.readLine.orDie
+      _ <- fileTypeChoice.trim match {
+        case "1" => handleLoadDotFile
+        case "2" => handleLoadJsonFile // Placeholder for future implementation
+        case _ => Console.printLine("Invalid choice. Please select 1 or 2.") *> handleUseExistingGraph
+      }
+    } yield ()
+
+  def handleLoadDotFile: IO[IOException, Unit] =
+    for {
       _ <- Console.printLine("Enter the path to the DOT file:")
       path <- Console.readLine.orDie
-      _ <- if (path.trim.toLowerCase =="new") {
-        Console.printLine("Setting new graph ... ")
-        handleCreateBlankGraph
+      _ <- if (path.trim.toLowerCase == "new") {
+        Console.printLine("Setting new graph ... ") *> handleCreateBlankGraph
       } else {
         loadGraphFromDot(path).catchAll {
-          case _: NoSuchFileException => 
-            Console.printLine("Invalid path. File not found. Try again.") *> handleUseExistingGraph
-          case e: IOException => 
-            Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleUseExistingGraph
+          case _: NoSuchFileException =>
+            Console.printLine("The specified path does not exist. Try again.") *> handleLoadDotFile
+          case e: IOException =>
+            Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleLoadDotFile
+        } *> {
+          loadedFilePath = Some(path)
+          useExistingGraphMenu
         }
-        loadedFilePath = Some(path) // Store the file path
-        useExistingGraphMenu
-    }
+      }
+    } yield ()
+
+
+  val graphDecoder: JsonDecoder[DirectedGraph[String]] = JsonDecoder[DirectedGraph[String]]
+  val decoder: JsonDecoder[Map[String, List[String]]] = JsonDecoder[Map[String, List[String]]]
+  def handleLoadJsonFile: IO[IOException, Unit] =
+    for {
+      _ <- Console.printLine("Enter the path to the JSON file:")
+      path <- Console.readLine.orDie
+      content <- ZIO.attempt(Files.readString(Paths.get(path))).refineToOrDie[IOException]
+      decodedGraph = content.fromJson[DirectedGraph[String]]
+      _ <- decodedGraph match {
+        case Right(graph) =>
+          Console.printLine(s"Decoded Graph: $graph").orDie *> {
+            directedGraph = graph
+            loadedFilePath = Some(path)
+            useExistingGraphMenu
+          }
+        case Left(error) =>
+          Console.printLine(s"Decoding error: $error").orDie *> handleLoadJsonFile
+      }
     } yield ()
 
   //voici a quoi doit ressembler le path du fichier dot : D:/scala/graph.dot
@@ -116,6 +152,7 @@ object Main extends ZIOAppDefault {
           |4. Add Edge
           |5. Remove Edge
           |6. Save as Graph (DOT + JSON)
+          |7. Quit
         """.stripMargin
       ).orDie
       subChoice <- Console.readLine.orDie
@@ -129,6 +166,7 @@ object Main extends ZIOAppDefault {
     case "4" => addEdge *> saveLoadedGraph *> useExistingGraphMenu
     case "5" => removeEdge *> saveLoadedGraph *> useExistingGraphMenu
     case "6" => saveGraph
+    case "7" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> useExistingGraphMenu
   }
 

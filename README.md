@@ -107,14 +107,9 @@ The data can persists in DOT and JSON format after saving it.
 ### Future Possible Improvements
 What we can do in more complex app, is upscaling the technologies to dedicated alternatives such as : 
 
-#### Dedicated Database
-We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
+- Dedicated Database : We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
 
-#### Threading and concurrency
-ZIO have immutable data structure such as Ref or STM, that can help with functionnal purity and thread-safety. ZIO's primitives can also handle multiple user inputs if the app-terminal need to be operated by multiple users at the same time.
-
-#### Graphic User Interface
-Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface that can be easily customized to fit our needs later on.
+- Graphic User Interface : Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface that can be easily customized to fit our needs later on.
 
 ## Testing
 

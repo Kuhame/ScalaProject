@@ -101,7 +101,7 @@ directedGraphRef <- Ref.make(DirectedGraph[String]())
 ```
 The application has many interactions for changing it, as it allows to import either DOT or JSON file at a location specified by the user directly in the terminal. The other interactions are diretly done by the user, who can add or remove edges, and all of them have input prompt that highlight these operations. 
 
-Through the menu, ZIO uses combinators to handle possible human failures such as removing non-existent edges, invalid input keys, or writing a faulty import path. The error is handled so that the system is still running instead of crashing.
+Through the menus, ZIO uses combinators to handle possible human failures such as removing non-existent edges, invalid input keys, or writing a faulty import path. The error is handled so that the system is still running instead of crashing.
 
 When satisfied, the user can save the `DirectedGraph` data, and it will persists in DOT and JSON format, that can be edited later.
 

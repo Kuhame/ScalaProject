@@ -6,7 +6,7 @@ This project is a terminal-based application that allows users to create, edit, 
 
 The project is divided into two sub-projects:
 
-1. **Graph Data Structure**: The project includes a graph data structure library with various operations for creating, editing, and saving directed graphs, undirected graphs and weighted directed graphs. It also includes graph operations such as DFS, BFS, Topological Sort, Cycle Detection, Floyd Algorithm and Dijkstra Algorithm.
+1. **Graph Data Structure**: The project includes a graph data structure library with various operations for creating, editing, and saving directed graphs, undirected graphs and weighted directed graphs. It also includes graph operations such as DFS, BFS, Topological Sort, Cycle Detection and Dijkstra Algorithm.
 
 2. **ZIO Application Integration**: The graph data structure library is integrated into a ZIO application that provides a terminal-based interface for users to interact with the graph data structure. 
 **Currently, the app only support directed graphs**, but it can be easily extended to support other types of graphs.
@@ -35,7 +35,7 @@ This will start the application in the terminal. You can then follow the on-scre
 - List all edges in the graph
 - List neighbors of a specific vertex
 - Save the graph to a file (DOT format or JSON format)
-- Run graph algorithms (Only DFS for now)
+- Run graph algorithms (Only DFS for now in the terminal, to check other algorithms you can check the tests)
 - Exit the application
 
 You can also run the test and build the project by executing the following commands:
@@ -55,7 +55,7 @@ The graph data structure is implemented using an adjacency list representation, 
 
 For the design of the graph data structure, we have followed functional programming principles such as immutability. The graph data structure is designed to be immutable, meaning that once a graph is created, it cannot be modified. Instead, operations on the graph return a new graph with the desired changes.
 
-We have also implemented graph algorithms such as DFS, BFS, Topological Sort, Cycle Detection, Floyd Algorithm, and Dijkstra Algorithm. These algorithms are commonly used in graph theory and provide useful insights into the structure of a graph. 
+We have also implemented graph algorithms such as DFS, BFS, Topological Sort, Cycle Detection and Dijkstra Algorithm. These algorithms are commonly used in graph theory and provide useful insights into the structure of a graph. 
 For now, theses algorithms have been implemented and tested to work on directed graphs.
 
 #### Graph Classes and Traits 
@@ -71,6 +71,7 @@ The graph data structure library includes the following classes and traits:
 - `WeightedGraph`: A class that extends the `Graph` trait for weighted directed graphs. It uses also uses an adjacency list representation and a weigthed edge class to store the weight of the edges.
 
 All of theses classes extends the Graph trait because they share common operations such as adding and removing edges, getting neighbors of a vertex, etc ...
+They also handle generic types, so the user can choose the type of the vertices (String, Int, etc ...).
 
 Each graph have an object companion that contains the apply method to create a new empty graph and the encode and decode methods to save and load the graph in JSON format.
 
@@ -90,40 +91,25 @@ We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted on
 
 - `Dijkstra` : The `dijkstra` function takes as entries a strating vertex and a map containing as keys the vertices, and as values a list of tuples which are the adjacent verteices and the weight of the edge to the vertices as keys. It returns the shortest path from a vertex to all other vertices in a weighted graph. We used a mutable map that keeps track of the shortest known distance from the source to each vertex, and a mutable priority queue to fetch the vertex with the smallest distance (the smallest distance having the highest priority).
 
-### State Management 
-The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, whih represents the graph structure.
+#### State Management 
+The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we avoided the variable reassignment and instead used Immutable states. These cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, which represents the current graph structure. It should be updated even though being immutable.
 
-ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
+ZIO has a special state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users). 
 
 ```scala
 directedGraphRef <- Ref.make(DirectedGraph[String]())
 ```
-The application allows to import either DOT or JSON file,at a location specified by the user directly in the terminal, which update the originally blank graph state. The other interactions are done by the user, who can add or remove edges, and all of them have input prompt that highlight these operations. 
+The application has many interactions for changing it, as it allows to import either DOT or JSON file at a location specified by the user directly in the terminal. The other interactions are diretly done by the user, who can add or remove edges, and all of them have input prompt that highlight these operations. 
 
-Through the menu, ZIO uses combinators to handle possible human failures such as invalid keys or file path. The error is handled so that the system is still running instead of crashing.
+Through the menu, ZIO uses combinators to handle possible human failures such as removing non-existent edges, invalid input keys, or writing a faulty import path. The error is handled so that the system is still running instead of crashing.
 
-The data can persists in DOT and JSON format after saving it. 
+When satisfied, the user can save the `DirectedGraph` data, and it will persists in DOT and JSON format, that can be edited later.
 
-#### Error Handling
-When the user try to add already existing edges or remove non-existent ones, error is handled so that the system is still running instead of crashing.
+#### Future possible improvements
+We can still to upscale the current environment with dedicated alternatives such as : 
+- Dedicated Database : We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
+- Graphic User Interface : Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface and providing a better state monitoring that can be easily customized.
 
-#### In-memory state
-When the terminal is on, the graph state is maintained in a mutable variable 'directedGraph', that would be saved later.
-
-#### Data Persistence
-The data can persists in DOT and JSON format after saving it. The app can also reuse existing graph at a location specified by the user directly in the terminal.
-
-### Future Possible Improvements
-What we can do in more complex app, is upscaling the technologies to dedicated alternatives such as : 
-
-#### Dedicated Database
-We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
-
-#### Threading and concurrency
-ZIO have immutable data structure such as Ref or STM, that can help with functionnal purity and thread-safety. ZIO's primitives can also handle multiple user inputs if the app-terminal need to be operated by multiple users at the same time.
-
-#### Graphic User Interface
-Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface that can be easily customized to fit our needs later on.
 
 ## Testing
 

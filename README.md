@@ -91,16 +91,16 @@ We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted on
 - `Dijkstra` : The `dijkstra` function takes as entries a strating vertex and a map containing as keys the vertices, and as values a list of tuples which are the adjacent verteices and the weight of the edge to the vertices as keys. It returns the shortest path from a vertex to all other vertices in a weighted graph. We used a mutable map that keeps track of the shortest known distance from the source to each vertex, and a mutable priority queue to fetch the vertex with the smallest distance (the smallest distance having the highest priority).
 
 ### State Management 
+The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, whih represents the graph structure.
 
-# TODO CHANGE STATE MANAGEMENT SECTION TO EXPLAIN HOW STATE IS MANAGED IN THE APPLICATION (IMMUTABILITY, ZIO, ETC.)
+ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
 
-This is a terminal-based app to edit graphs in DOT formats (can also be saved to JSON). Due to the simplicity of the app-terminal we tried to keep it easy to understand, so our approach to state management focused exclusively on important mechanisms such as : 
+```scala
+directedGraphRef <- Ref.make(DirectedGraph[String]())
+```
+The application allows to import either DOT or JSON file, which then update the graph state.
 
-#### User input Handling 
-The user is guided through the menus and the system ask which vertices, edges to add or remove, all of them have input prompt that highlight these operations. If he missclicked to "use existing graphs" he can type "new" in the path input instead, to create a new graph.
-
-#### Feedback
-User receive immediate feedback on these actions. Though some are minimized since we wanted to have each functions do exactly what it needs to do (addEdge is exclusively adding edge but don't return the new graph structure).
+The other interactions is done through user Ref interactions, the latter is guided through the menus and can display vertices, edges to add or remove, and all of them have input prompt that highlight these operations. If he missclicked to "use existing graphs", the app still offer some flexibility to create a new graph. The app will provide immediate feedback on these actions, though some are minimized since we wanted to have each functions do have a single responsibility (addEdge is exclusively adding edge but don't return the new graph structure).
 
 #### Error Handling
 When the user try to add already existing edges or remove non-existent ones, error is handled so that the system is still running instead of crashing.

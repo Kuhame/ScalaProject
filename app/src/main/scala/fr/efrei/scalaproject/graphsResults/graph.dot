@@ -1,8 +1,12 @@
 digraph G {
+E -> G;
+F -> H;
 A -> B;
 A -> C;
-A -> D;
-A -> E;
-B -> A;
-B -> P;
+G -> H;
+B -> D;
+B -> E;
+C -> F;
+H -> I;
+D -> G;
 }

@@ -104,8 +104,8 @@ Through the menu, ZIO uses combinators to handle possible human failures such as
 
 When satisfied, the user can save the `DirectedGraph` data, and it will persists in DOT and JSON format, that can be edited later.
 
-### Future Possible Improvements
-What we can do in more complex app, is upscaling the technologies to dedicated alternatives such as : 
+#### Future Possible Improvement for State Management
+As the app was quite simple, we did not go implement all the way, however it is really possible to upscale the current environment with dedicated alternatives such as : 
 
 - Dedicated Database : We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
 

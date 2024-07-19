@@ -3,16 +3,12 @@ package fr.efrei.scalaproject.graph
 object TopologicalSorting {
 
   def topologicalSort[V](graph: Graph[V]): Option[List[V]] = {
-    // Helper function to perform depth-first search and detect cycles
     def dfsVisit(node: V, visited: Set[V], stack: List[V], tempMarks: Set[V]): (Set[V], List[V], Boolean) = {
       if (tempMarks.contains(node)) {
-        // A cycle was detected
         (visited, stack, true)
       } else if (visited.contains(node)) {
-        // Node already processed
         (visited, stack, false)
       } else {
-        // Mark the node as temporarily visited
         val newTempMarks = tempMarks + node
         val (newVisited, newStack, hasCycle) = graph.neighbors(node).foldLeft((visited + node, stack, false)) {
           case ((vis, stk, cycle), neighbor) =>
@@ -26,7 +22,6 @@ object TopologicalSorting {
       }
     }
 
-    // Perform DFS from all vertices
     val (visited, stack, hasCycle) = graph.vertices.foldLeft((Set[V](), List[V](), false)) {
       case ((vis, stk, cycle), vertex) =>
         if (vis.contains(vertex)) (vis, stk, cycle)

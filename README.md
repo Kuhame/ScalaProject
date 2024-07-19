@@ -6,7 +6,7 @@ This project is a terminal-based application that allows users to create, edit, 
 
 The project is divided into two sub-projects:
 
-1. **Graph Data Structure**: The project includes a graph data structure library with various operations for creating, editing, and saving directed graphs, undirected graphs and weighted directed graphs. It also includes graph operations such as DFS, BFS, Topological Sort, Cycle Detection and Dijkstra Algorithm.
+1. **Graph Data Structure**: The project includes a graph data structure library with various operations for creating, editing, and saving directed graphs, undirected graphs and weighted directed graphs. It also includes graph operations such as DFS, BFS, Cycle Detection and Dijkstra Algorithm (Topological Sorting is not finished yet).
 
 2. **ZIO Application Integration**: The graph data structure library is integrated into a ZIO application that provides a terminal-based interface for users to interact with the graph data structure. 
 **Currently, the app only support directed graphs**, but it can be easily extended to support other types of graphs.
@@ -55,7 +55,7 @@ The graph data structure is implemented using an adjacency list representation, 
 
 For the design of the graph data structure, we have followed functional programming principles such as immutability. The graph data structure is designed to be immutable, meaning that once a graph is created, it cannot be modified. Instead, operations on the graph return a new graph with the desired changes.
 
-We have also implemented graph algorithms such as DFS, BFS, Topological Sort, Cycle Detection and Dijkstra Algorithm. These algorithms are commonly used in graph theory and provide useful insights into the structure of a graph. 
+We have also implemented graph algorithms such as DFS, BFS, Cycle Detection and Dijkstra Algorithm. These algorithms are commonly used in graph theory and provide useful insights into the structure of a graph. 
 For now, theses algorithms have been implemented and tested to work on directed graphs.
 
 #### Graph Classes and Traits 
@@ -81,7 +81,7 @@ For the implementation of the graph operations, we chose to create an object for
 
 We decided to do all the functions using @tailrec, since without it, each recursive call would add a new frame to the call stack. Instead, here it uses the current stack frame, which allows us to avoid getting a StackOverflowError that would occur if there was too many frames added to the call stack. Tail-recursive function could be optimized by the Scala compiler, which would make them faster and less memory consumming. 
 
-We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted ones. Floyd-Marshall and Topological Sorting are not implemented yet.
+We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted ones. Floyd-Marshall is not implemented and Topological Sorting is not finished yet.
 
 - `DFS`: The `dfs` tailrec function takes in entry a graph and the stating point from which it'll start applying the DFS, and returns a Set of all the visted vertices. We use inside of it a pattern matching to process the stack.
 

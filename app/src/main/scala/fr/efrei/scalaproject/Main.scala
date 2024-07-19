@@ -44,49 +44,47 @@ object Main extends ZIOAppDefault {
           |6. Save as Graph (DOT + JSON)
           |7. Quit
         """.stripMargin
-    ).orDie
-    subChoice <- Console.readLine.orDie
-    _ <- blankMenu(subChoice, directedGraph)
-  } yield()
+      ).orDie
+      subChoice <- Console.readLine.orDie
+      _ <- blankMenu(subChoice, directedGraph)
+    } yield ()
 
-  
   // B. Use existing Graph
-  def handleUseExistingGraph: IO[IOException, Unit] =
+  def handleUseExistingGraph(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
     for {
       _ <- Console.printLine("Choose file type to load:")
       _ <- Console.printLine("1. Load a DOT file")
       _ <- Console.printLine("2. Load a JSON file")
       fileTypeChoice <- Console.readLine.orDie
       _ <- fileTypeChoice.trim match {
-        case "1" => handleLoadDotFile
-        case "2" => handleLoadJsonFile // Placeholder for future implementation
-        case _ => Console.printLine("Invalid choice. Please select 1 or 2.") *> handleUseExistingGraph
+        case "1" => handleLoadDotFile(directedGraph, loadedFilePath)
+        case "2" => handleLoadJsonFile(directedGraph, loadedFilePath) // Placeholder for future implementation
+        case _ => Console.printLine("Invalid choice. Please select 1 or 2.") *> handleUseExistingGraph(directedGraph, loadedFilePath)
       }
     } yield ()
 
-  def handleLoadDotFile: IO[IOException, Unit] =
+  def handleLoadDotFile(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
     for {
       _ <- Console.printLine("Enter the path to the DOT file:")
       path <- Console.readLine.orDie
       _ <- if (path.trim.toLowerCase == "new") {
-        Console.printLine("Setting new graph ... ") *> handleCreateBlankGraph
+        Console.printLine("Setting new graph ... ") *> handleCreateBlankGraph(directedGraph)
       } else {
-        loadGraphFromDot(path).catchAll {
+        loadGraphFromDot(path, directedGraph).catchAll {
           case _: NoSuchFileException =>
-            Console.printLine("The specified path does not exist. Try again.") *> handleLoadDotFile
+            Console.printLine("The specified path does not exist. Try again.") *> handleLoadDotFile(directedGraph, loadedFilePath)
           case e: IOException =>
-            Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleLoadDotFile
+            Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleLoadDotFile(directedGraph, loadedFilePath)
         } *> {
-          loadedFilePath = Some(path)
-          useExistingGraphMenu
+          loadedFilePath.set(Some(path)) *> useExistingGraphMenu(directedGraph, loadedFilePath)
         }
       }
     } yield ()
 
-
   val graphDecoder: JsonDecoder[DirectedGraph[String]] = JsonDecoder[DirectedGraph[String]]
   val decoder: JsonDecoder[Map[String, List[String]]] = JsonDecoder[Map[String, List[String]]]
-  def handleLoadJsonFile: IO[IOException, Unit] =
+
+  def handleLoadJsonFile(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
     for {
       _ <- Console.printLine("Enter the path to the JSON file:")
       path <- Console.readLine.orDie
@@ -95,17 +93,14 @@ object Main extends ZIOAppDefault {
       _ <- decodedGraph match {
         case Right(graph) =>
           Console.printLine(s"Decoded Graph: $graph").orDie *> {
-            directedGraph = graph
-            loadedFilePath = Some(path)
-            useExistingGraphMenu
+            directedGraph.set(graph) *> loadedFilePath.set(Some(path)) *> useExistingGraphMenu(directedGraph, loadedFilePath)
           }
         case Left(error) =>
-          Console.printLine(s"Decoding error: $error").orDie *> handleLoadJsonFile
+          Console.printLine(s"Decoding error: $error").orDie *> handleLoadJsonFile(directedGraph, loadedFilePath)
       }
-   
+    } yield ()
 
   // Handler of Menu A
-  // Les *> permettent de renvoyer vers un autre menu après l'exécution de la première
   def blankMenu(choice: String, directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] = choice.trim match {
     case "1" => getAllVertices(directedGraph) *> handleCreateBlankGraph(directedGraph)
     case "2" => getAllEdges(directedGraph) *> handleCreateBlankGraph(directedGraph)
@@ -117,25 +112,6 @@ object Main extends ZIOAppDefault {
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> handleCreateBlankGraph(directedGraph)
   }
 
-  // B. Use existing Graph
-  def handleLoadDotFile(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
-    for {
-      _ <- Console.printLine("Enter the path to the DOT file or type 'new' to create a blank graph:")
-      path <- Console.readLine.orDie
-      _ <- if (path.trim.toLowerCase == "new") {
-             handleCreateBlankGraph(directedGraph)
-           } else {
-             loadGraphFromDot(path, directedGraph).catchAll {
-               case _: NoSuchFileException =>
-                 Console.printLine("Invalid path. File not found. Try again.") *> handleUseExistingGraph(directedGraph, loadedFilePath)
-               case e: IOException =>
-                 Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleUseExistingGraph(directedGraph, loadedFilePath)
-             } *> loadedFilePath.set(Some(path)) *> useExistingGraphMenu(directedGraph, loadedFilePath)
-           }
-    } yield ()
-
-  // Voici à quoi doit ressembler le path du fichier dot : D:/scala/graph.dot
-  // Bien se rassurer que le fichier soit bien un fichier dot
   def loadGraphFromDot(path: String, directedGraph: Ref[DirectedGraph[String]]): IO[IOException, Unit] =
     for {
       content <- ZIO.attempt(Files.readString(Paths.get(path))).refineToOrDie[IOException]
@@ -258,5 +234,4 @@ object Main extends ZIOAppDefault {
       }.orDie
 
     } yield ()).orDie
-
 }

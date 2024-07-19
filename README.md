@@ -1,4 +1,4 @@
-# Funtional Programming Project (Scala 3) - Functional Graph
+# Funtional Programming Project (Scala 3)
 
 ## Project Overview
 

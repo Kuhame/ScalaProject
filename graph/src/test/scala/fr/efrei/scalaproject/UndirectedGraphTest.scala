@@ -38,6 +38,20 @@ class UndirectedGraphSpec extends AnyFlatSpec with Matchers {
     graph.neighbors(3) should contain allOf (1, 2)
   }
 
+  it should "filter out isolated vertices with empty sets" in {
+    val graph = UndirectedGraph[String](
+      Map(
+        "C" -> Set(),
+        "D" -> Set(),
+        "B" -> Set("C"),
+        "A" -> Set("B")
+      )
+    )
+
+    graph.vertices should contain allOf ("A", "B", "C")
+    graph.vertices should not contain ("D")
+  }
+
   it should "serialize and deserialize correctly" in {
     val graph = UndirectedGraph[Int]()
       .addEdge(1, 2)

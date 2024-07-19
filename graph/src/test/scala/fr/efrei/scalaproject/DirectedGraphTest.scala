@@ -36,6 +36,20 @@ class DirectedGraphSpec extends AnyFlatSpec with Matchers {
     graph.neighbors(3) should contain only 1
   }
 
+  it should "filter out isolated vertices with empty sets" in {
+    val graph = DirectedGraph[String](
+      Map(
+        "C" -> Set(),
+        "D" -> Set(),
+        "B" -> Set("C"),
+        "A" -> Set("B")
+      )
+    )
+
+    graph.vertices should contain allOf ("A", "B", "C")
+    graph.vertices should not contain ("D")
+  }
+
   it should "serialize and deserialize correctly" in {
     val graph = DirectedGraph[Int]()
       .addEdge(1, 2)

@@ -36,6 +36,20 @@ class WeightedGraphSpec extends AnyFlatSpec with Matchers {
     graph.neighbors("C") should contain only "A"
   }
 
+  it should "filter out isolated vertices with empty sets" in {
+    val graph = WeightedGraph[String](
+      Map(
+        "C" -> Set(),
+        "D" -> Set(),
+        "B" -> Set(WeightedEdge("C", 2)),
+        "A" -> Set(WeightedEdge("B", 3))
+      )
+    )
+
+    graph.vertices should contain allOf ("A", "B", "C")
+    graph.vertices should not contain ("D")
+  }
+
   it should "serialize and deserialize correctly" in {
     val graph = WeightedGraph[String]()
       .addEdge("A", "B", 5)

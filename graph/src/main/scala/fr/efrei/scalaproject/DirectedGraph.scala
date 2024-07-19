@@ -1,7 +1,13 @@
 package fr.efrei.scalaproject.graph
 import zio.json._
 final case class DirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
-  def vertices: Set[V] = adjList.keySet ++ adjList.values.flatten
+  def vertices: Set[V] = {
+    val referencedVertices = adjList.values.flatten.toSet
+    val verticesWithEdges = adjList.filter { case (vertex, edges) =>
+      edges.nonEmpty || referencedVertices.contains(vertex)
+    }.keySet
+    referencedVertices ++ verticesWithEdges
+  }
   def edges: Set[(V, V)] = adjList
     .map {
       case (vertex, edges) => {

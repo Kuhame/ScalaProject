@@ -91,9 +91,9 @@ We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted on
 - `Dijkstra` : The `dijkstra` function takes as entries a strating vertex and a map containing as keys the vertices, and as values a list of tuples which are the adjacent verteices and the weight of the edge to the vertices as keys. It returns the shortest path from a vertex to all other vertices in a weighted graph. We used a mutable map that keeps track of the shortest known distance from the source to each vertex, and a mutable priority queue to fetch the vertex with the smallest distance (the smallest distance having the highest priority).
 
 ### State Management 
-The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, which represents the current graph structure.
+The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we avoided the variable reassignment and instead used Immutable states. These cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, which represents the current graph structure.
 
-ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
+ZIO has a special mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
 
 ```scala
 directedGraphRef <- Ref.make(DirectedGraph[String]())
@@ -104,12 +104,9 @@ Through the menu, ZIO uses combinators to handle possible human failures such as
 
 When satisfied, the user can save the `DirectedGraph` data, and it will persists in DOT and JSON format, that can be edited later.
 
-#### Future Possible Improvement for State Management
-As the app was quite simple, we did not go implement all the way, however it is really possible to upscale the current environment with dedicated alternatives such as : 
-
+At the end, we did not implement all the way, however it is really possible to upscale the current environment with dedicated alternatives such as : 
 - Dedicated Database : We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
-
-- Graphic User Interface : Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface that can be easily customized to fit our needs later on.
+- Graphic User Interface : Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface and providing a better state monitoring that can be easily customized.
 
 ## Testing
 

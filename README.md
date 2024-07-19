@@ -71,6 +71,7 @@ The graph data structure library includes the following classes and traits:
 - `WeightedGraph`: A class that extends the `Graph` trait for weighted directed graphs. It uses also uses an adjacency list representation and a weigthed edge class to store the weight of the edges.
 
 All of theses classes extends the Graph trait because they share common operations such as adding and removing edges, getting neighbors of a vertex, etc ...
+They also handle generic types, so the user can choose the type of the vertices (String, Int, etc ...).
 
 Each graph have an object companion that contains the apply method to create a new empty graph and the encode and decode methods to save and load the graph in JSON format.
 

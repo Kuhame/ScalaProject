@@ -42,11 +42,67 @@ object Main extends ZIOAppDefault {
           |4. Add Edge
           |5. Remove Edge
           |6. Save as Graph (DOT + JSON)
+          |7. Quit
         """.stripMargin
-      ).orDie
-      subChoice <- Console.readLine.orDie
-      _ <- blankMenu(subChoice, directedGraph)
+    ).orDie
+    subChoice <- Console.readLine.orDie
+    _ <- blankMenu(subChoice, directedGraph)
+  } yield()
+
+  
+  // B. Use existing Graph
+  def handleUseExistingGraph: IO[IOException, Unit] =
+    for {
+      _ <- Console.printLine("Choose file type to load:")
+      _ <- Console.printLine("1. Load a DOT file")
+      _ <- Console.printLine("2. Load a JSON file")
+      fileTypeChoice <- Console.readLine.orDie
+      _ <- fileTypeChoice.trim match {
+        case "1" => handleLoadDotFile
+        case "2" => handleLoadJsonFile // Placeholder for future implementation
+        case _ => Console.printLine("Invalid choice. Please select 1 or 2.") *> handleUseExistingGraph
+      }
     } yield ()
+
+  def handleLoadDotFile: IO[IOException, Unit] =
+    for {
+      _ <- Console.printLine("Enter the path to the DOT file:")
+      path <- Console.readLine.orDie
+      _ <- if (path.trim.toLowerCase == "new") {
+        Console.printLine("Setting new graph ... ") *> handleCreateBlankGraph
+      } else {
+        loadGraphFromDot(path).catchAll {
+          case _: NoSuchFileException =>
+            Console.printLine("The specified path does not exist. Try again.") *> handleLoadDotFile
+          case e: IOException =>
+            Console.printLine(s"An error occurred: ${e.getMessage}. Try again.") *> handleLoadDotFile
+        } *> {
+          loadedFilePath = Some(path)
+          useExistingGraphMenu
+        }
+      }
+    } yield ()
+
+
+  val graphDecoder: JsonDecoder[DirectedGraph[String]] = JsonDecoder[DirectedGraph[String]]
+  val decoder: JsonDecoder[Map[String, List[String]]] = JsonDecoder[Map[String, List[String]]]
+  def handleLoadJsonFile: IO[IOException, Unit] =
+    for {
+      _ <- Console.printLine("Enter the path to the JSON file:")
+      path <- Console.readLine.orDie
+      content <- ZIO.attempt(Files.readString(Paths.get(path))).refineToOrDie[IOException]
+      decodedGraph = content.fromJson[DirectedGraph[String]]
+      _ <- decodedGraph match {
+        case Right(graph) =>
+          Console.printLine(s"Decoded Graph: $graph").orDie *> {
+            directedGraph = graph
+            loadedFilePath = Some(path)
+            useExistingGraphMenu
+          }
+        case Left(error) =>
+          Console.printLine(s"Decoding error: $error").orDie *> handleLoadJsonFile
+      }
+   
 
   // Handler of Menu A
   // Les *> permettent de renvoyer vers un autre menu après l'exécution de la première
@@ -57,11 +113,12 @@ object Main extends ZIOAppDefault {
     case "4" => addEdge(directedGraph) *> handleCreateBlankGraph(directedGraph)
     case "5" => removeEdge(directedGraph) *> handleCreateBlankGraph(directedGraph)
     case "6" => saveGraph(directedGraph)
+    case "7" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> handleCreateBlankGraph(directedGraph)
   }
 
   // B. Use existing Graph
-  def handleUseExistingGraph(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
+  def handleLoadDotFile(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): IO[IOException, Unit] =
     for {
       _ <- Console.printLine("Enter the path to the DOT file or type 'new' to create a blank graph:")
       path <- Console.readLine.orDie
@@ -106,6 +163,7 @@ object Main extends ZIOAppDefault {
           |4. Add Edge
           |5. Remove Edge
           |6. Save as Graph (DOT + JSON)
+          |7. Quit
         """.stripMargin
       ).orDie
       subChoice <- Console.readLine.orDie
@@ -119,6 +177,7 @@ object Main extends ZIOAppDefault {
     case "4" => addEdge(directedGraph) *> saveLoadedGraph(directedGraph, loadedFilePath) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "5" => removeEdge(directedGraph) *> saveLoadedGraph(directedGraph, loadedFilePath) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "6" => saveGraph(directedGraph)
+    case "7" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> useExistingGraphMenu(directedGraph, loadedFilePath)
   }
 

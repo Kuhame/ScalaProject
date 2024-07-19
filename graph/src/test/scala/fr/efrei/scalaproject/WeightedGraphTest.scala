@@ -74,4 +74,15 @@ class WeightedGraphSpec extends AnyFlatSpec with Matchers {
         succeed
     }
   }
+
+  it should "generate correct DOT representation" in {
+    val graph = WeightedGraph[String]()
+      .addEdge("A", "B", 5)
+      .addEdge("B", "C", 10)
+
+    val dotRepresentation = graph.toDot()
+    dotRepresentation should be(
+      "digraph G {\nA -> B [label=5];\nB -> C [label=10];\n}"
+    )
+  }
 }

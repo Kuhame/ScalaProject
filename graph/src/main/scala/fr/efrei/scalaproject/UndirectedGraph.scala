@@ -39,12 +39,17 @@ final case class UndirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
   }
 
   def toDot(): String = {
-    val edges = adjList.foldLeft("") { case (acc, (vertex, neighbors)) =>
-      acc + neighbors.foldLeft("") { case (acc, neighbor) =>
-        acc + s"$vertex -- $neighbor;\n"
-      }
+    val edges = adjList.foldLeft(Set.empty[(V, V)]) {
+      case (acc, (vertex, neighbors)) =>
+        acc ++ neighbors.map(neighbor =>
+          if (vertex.toString < neighbor.toString) (vertex, neighbor)
+          else (neighbor, vertex)
+        )
     }
-    s"graph G {\n$edges}"
+    val edgesString = edges.foldLeft("") { case (acc, (v1, v2)) =>
+      acc + s"$v1 -- $v2;\n"
+    }
+    s"graph G {\n$edgesString}"
   }
 
 }

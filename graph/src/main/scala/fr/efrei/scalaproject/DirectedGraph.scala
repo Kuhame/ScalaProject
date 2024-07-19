@@ -3,6 +3,7 @@ import zio.json._
 final case class DirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
   def vertices: Set[V] = {
     val referencedVertices = adjList.values.flatten.toSet
+    // filter out vertices that have no edges and are not referenced by any other vertex
     val verticesWithEdges = adjList.filter { case (vertex, edges) =>
       edges.nonEmpty || referencedVertices.contains(vertex)
     }.keySet

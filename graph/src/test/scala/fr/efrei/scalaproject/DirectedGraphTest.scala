@@ -74,4 +74,13 @@ class DirectedGraphSpec extends AnyFlatSpec with Matchers {
         succeed
     }
   }
+
+  it should "generate correct DOT representation" in {
+    val graph = DirectedGraph[Int]()
+      .addEdge(1, 2)
+      .addEdge(2, 3)
+
+    val dotRepresentation = graph.toDot()
+    dotRepresentation should be("digraph G {\n1 -> 2;\n2 -> 3;\n}")
+  }
 }

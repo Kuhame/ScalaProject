@@ -76,4 +76,13 @@ class UndirectedGraphSpec extends AnyFlatSpec with Matchers {
         succeed
     }
   }
+
+  it should "generate correct DOT representation" in {
+    val graph = UndirectedGraph[Int]()
+      .addEdge(1, 2)
+      .addEdge(2, 3)
+
+    val dotRepresentation = graph.toDot()
+    dotRepresentation should be("graph G {\n1 -- 2;\n2 -- 3;\n}")
+  }
 }

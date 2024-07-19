@@ -91,14 +91,14 @@ We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted on
 - `Dijkstra` : The `dijkstra` function takes as entries a strating vertex and a map containing as keys the vertices, and as values a list of tuples which are the adjacent verteices and the weight of the edge to the vertices as keys. It returns the shortest path from a vertex to all other vertices in a weighted graph. We used a mutable map that keeps track of the shortest known distance from the source to each vertex, and a mutable priority queue to fetch the vertex with the smallest distance (the smallest distance having the highest priority).
 
 ### State Management 
-The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, whih represents the graph structure.
+The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, which represents the current graph structure.
 
 ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
 
 ```scala
 directedGraphRef <- Ref.make(DirectedGraph[String]())
 ```
-The application allows to import either DOT or JSON file,at a location specified by the user directly in the terminal, which update the originally blank graph state. The other interactions are done by the user, who can add or remove edges, and all of them have input prompt that highlight these operations. 
+The application has many interactions for changing it, as it allows to import either DOT or JSON file at a location specified by the user directly in the terminal. The other interactions are diretly done by the user, who can add or remove edges, and all of them have input prompt that highlight these operations. 
 
 Through the menu, ZIO uses combinators to handle possible human failures such as invalid keys or file path. The error is handled so that the system is still running instead of crashing.
 

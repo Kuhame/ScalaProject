@@ -15,8 +15,13 @@ object WeightedEdge {
 
 final case class WeightedGraph[V](adjList: Map[V, Set[WeightedEdge[V]]])
     extends Graph[V] {
-
-  def vertices: Set[V] = adjList.keySet ++ adjList.values.flatten.map(_.to)
+  def vertices: Set[V] = {
+    val referencedVertices = adjList.values.flatten.map(_.to).toSet
+    val verticesWithEdges = adjList.filter { case (vertex, edges) =>
+      edges.nonEmpty || referencedVertices.contains(vertex)
+    }.keySet
+    referencedVertices ++ verticesWithEdges
+  }
 
   def edges: Set[(V, V)] = adjList
     .map {

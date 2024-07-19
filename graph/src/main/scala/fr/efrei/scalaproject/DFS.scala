@@ -1,8 +1,13 @@
 package fr.efrei.scalaproject.graph
+
 import scala.annotation.tailrec
 
 object DFS {
   def dfs[V](graph: Graph[V], start: V): Set[V] = {
+    if (!graph.vertices.contains(start)) {
+      return Set() 
+    }
+
     @tailrec
     def loop(visited: Set[V], stack: List[V]): Set[V] = {
       stack match {

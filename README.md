@@ -76,7 +76,19 @@ Each graph have an object companion that contains the apply method to create a n
 
 #### Graph Operations
 
-# TODO ADD ALGORITHMS DESCRIPTION
+For the implementation of the graph operations, we chose to create an object for each operation, and to create inside of it a function that would realize the operation. Indeed, we chose to organize our code that way since the objects are static, and to use the functions we don't need to instantiate them we can directly call the function from the object.
+
+We decided to do all the functions using @tailrec, since without it, each recursive call would add a new frame to the call stack. Instead, here it uses the current stack frame, which allows us to avoid getting a StackOverflowError that would occur if there was too many frames added to the call stack. Tail-recursive function could be optimized by the Scala compiler, which would make them faster and less memory consumming. 
+
+We did DFS, BFS and DetectCycle  on directed graphs, and Dijkstra on weighted ones. Floyd-Marshall and Topological Sorting are not implemented yet.
+
+- `DFS`: The `dfs` tailrec function takes in entry a graph and the stating point from which it'll start applying the DFS, and returns a Set of all the visted vertices. We use inside of it a pattern matching to process the stack.
+
+- `BFS`: The tailrec `bfs` takes the same entries as DFS and returns the same thing, it also uses a pattern matching but it uses a queue and not a stack.
+
+- `DetectCycle`: The tailrec function `hasCycle` also takes the same entries, but returns a boolean this time, whether the Graph contains a cycle or not. It uses DFS and checks if a vertex is already in the recursion stack.
+
+- `Dijkstra` : The `dijkstra` function takes as entries a strating vertex and a map containing as keys the vertices, and as values a list of tuples which are the adjacent verteices and the weight of the edge to the vertices as keys. It returns the shortest path from a vertex to all other vertices in a weighted graph. We used a mutable map that keeps track of the shortest known distance from the source to each vertex, and a mutable priority queue to fetch the vertex with the smallest distance (the smallest distance having the highest priority).
 
 ### State Management 
 

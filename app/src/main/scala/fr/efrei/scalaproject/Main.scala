@@ -209,9 +209,9 @@ object Main extends ZIOAppDefault {
 
   def addEdge(directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] =
     (for {
-      _ <- Console.print("Enter vertexes to add an edge from: ...")
+      _ <- Console.print("Enter vertexes to add an edge from: ")
       from <- Console.readLine.orDie
-      _ <- Console.print("Enter vertex to add edge to: ... ")
+      _ <- Console.print("Enter vertex to add edge to:  ")
       to <- Console.readLine.orDie
       graph <- directedGraph.get
       _ <- if (graph.edges.exists(edge => edge._1 == from && edge._2 == to)) {
@@ -224,7 +224,7 @@ object Main extends ZIOAppDefault {
 
   def removeEdge(directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] =
     (for {
-      _ <- Console.print("Remove an edge from vertex:...")
+      _ <- Console.print("Remove an edge from vertex: ")
       from <- Console.readLine.orDie
       _ <- Console.print("Enter vertex to remove edge to: ")
       to <- Console.readLine.orDie

@@ -3,7 +3,13 @@ import zio.json._
 import zio.json.ast.Json.Str
 
 final case class UndirectedGraph[V](adjList: Map[V, Set[V]]) extends Graph[V] {
-  def vertices: Set[V] = adjList.keySet ++ adjList.values.flatten
+  def vertices: Set[V] = {
+    val referencedVertices = adjList.values.flatten.toSet
+    val verticesWithEdges = adjList.filter { case (vertex, edges) =>
+      edges.nonEmpty || referencedVertices.contains(vertex)
+    }.keySet
+    referencedVertices ++ verticesWithEdges
+  }
 
   def edges: Set[(V, V)] = adjList
     .map {

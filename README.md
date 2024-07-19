@@ -162,7 +162,52 @@ Here's an overview of the test coverage for each type of graph and algorithms:
 
 
 #### Graph Algorithms Tests:
-# TODO
+
+#### DFS and BFS Tests:
+
+- **Connected graph**: Checks if it visits all vertices in a connected graph.
+
+- **Cycle**: Checks if a graph with a cycle get handled well, meaning that it does not enter an infinite loop, but identifies that it has already passed by that vertex.
+
+- **Disconnected graph**: Checks if it recognizes that a disconnected graph can't get through all vertices, and the outcome depends on the starting vertex.
+
+- **One vertex**: It returns only the starting vertex if it has no neighbors.
+
+- **Unexisting starting vertex**: Return an empty set if the given starting vertex does not exist in the graph.
+
+- **Empty graph**: Returns an empty set for an empty graph.
+
+#### DetectCycle Tests:
+
+- **Has a cycle**: Detect a cycle in a cyclic graph.
+
+- **Has many cycles**: Detect all cycles if a graph contains many.
+
+- **No cycle**: Return false since there is no cycle.
+
+- **Disconnected graph**: Detect cycles in the right component.
+
+- **Empty graph**: Return false.
+
+- **Unexisting starting vertex**: Return false for a graph where the start vertex does not exist.
+
+#### Dijkstra Tests:
+
+- **Shortest path**: Compute shortest path for a simple graph.
+
+- **Single vertex**: Handles a graph with a single vertex.
+
+- **Disconnected graph**: Handles it the right way.
+
+- **No edges**: Handle a graph with no edges.
+
+- **Multiple short paths**: Ensures that if there are lany shortest paths, it computes all of them.
+
+- **Large graph**: To be able to handle a large graph.
+
+- **Negative weights**: Recognizes that it can not operate on negative values.
+
+- **Has a cycle**: Is able to handle cyclic graphs correctly.
 
 ## Usage Example
 

@@ -1,7 +1,7 @@
 import zio._
 import zio.Console._
 import zio.json._
-import fr.efrei.scalaproject.graph.DirectedGraph
+import fr.efrei.scalaproject.graph.{DirectedGraph, DFS}
 import java.io.IOException
 import java.nio.file.{Files, Paths, NoSuchFileException}
 
@@ -42,7 +42,8 @@ object Main extends ZIOAppDefault {
           |4. Add Edge
           |5. Remove Edge
           |6. Save as Graph (DOT + JSON)
-          |7. Quit
+          |7. Perform DFS
+          |8. Quit
         """.stripMargin
       ).orDie
       subChoice <- Console.readLine.orDie
@@ -125,7 +126,8 @@ object Main extends ZIOAppDefault {
     case "4" => addEdge(directedGraph) *> handleCreateBlankGraph(directedGraph)
     case "5" => removeEdge(directedGraph) *> handleCreateBlankGraph(directedGraph)
     case "6" => saveGraph(directedGraph)
-    case "7" => ZIO.succeed(())
+    case "7" => performDFS(directedGraph) *> handleCreateBlankGraph(directedGraph)
+    case "8" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> handleCreateBlankGraph(directedGraph)
   }
 
@@ -156,7 +158,8 @@ object Main extends ZIOAppDefault {
           |4. Add Edge
           |5. Remove Edge
           |6. Save as Graph (DOT + JSON)
-          |7. Quit
+          |7. Perform DFS
+          |8. Quit
         """.stripMargin
       ).orDie
       subChoice <- Console.readLine.orDie
@@ -170,7 +173,8 @@ object Main extends ZIOAppDefault {
     case "4" => addEdge(directedGraph) *> saveLoadedGraph(directedGraph, loadedFilePath) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "5" => removeEdge(directedGraph) *> saveLoadedGraph(directedGraph, loadedFilePath) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "6" => saveGraph(directedGraph)
-    case "7" => ZIO.succeed(())
+    case "7" => performDFS(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
+    case "8" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> useExistingGraphMenu(directedGraph, loadedFilePath)
   }
 
@@ -250,5 +254,18 @@ object Main extends ZIOAppDefault {
         Files.write(graphsDir.resolve("graph.json"), jsonFormat.getBytes)
       }.orDie
 
+    } yield ()).orDie
+
+  def performDFS(directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] =
+    (for {
+      _ <- Console.print("Enter the starting vertex for DFS: ")
+      start <- Console.readLine.orDie
+      graph <- directedGraph.get
+      _ <- if (graph.vertices.contains(start)) {
+             val dfsResult = DFS.dfs(graph, start)
+             Console.printLine(s"DFS starting from $start: ${dfsResult.mkString(", ")}").orDie
+           } else {
+             Console.printLine(s"Vertex $start does not exist in the graph.").orDie
+           }
     } yield ()).orDie
 }

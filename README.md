@@ -177,32 +177,49 @@ app/src/main/scala/fr/efrei/scalaproject/graphsResults/graph.dot
 
 The graph will be loaded from the file, and you can then perform operations on it.
 
+![img1](./images/1.png)
+
 ### Add Edges to the Graph
 
 To add edges to the graph, select the option 4 to add edges and enter the vertices for the edge when prompted.
 The edge will be added to the graph, and you can continue adding more edges.
 
+![img1](./images/2.png)
+
 ### List All Vertices in the Graph
 
 To list all vertices in the graph, select the option 1 to list all vertices. The vertices will be displayed on the screen.
+
+![img1](./images/3.png)
 
 ### List All Edges in the Graph
 
 To list all edges in the graph, select the option 2 to list all edges. The edges will be displayed on the screen.
 
-### Remove Edges from the Graph
+![img1](./images/4.png)
+
+### Remove Edges from the Graph and check if it's still there
 
 To remove edges from the graph, select the option 5 to remove edges and enter the vertices for the edge when prompted.
+The edge will be removed from the graph, then you can check if it's still there using the option 2.
+
+![img1](./images/5.png)
 
 ### Apply DFS Algorithm
 
 To apply the DFS algorithm to the graph, select the option 7 to run the DFS algorithm. The algorithm will be applied to the graph, and the result will be displayed on the screen.
+
+![img1](./images/6.png)
 
 ### Save the Graph to a DOT and JSON File
 
 To save the graph to a DOT and JSON file, select the option 6 to save the graph.
 The graph will be saved in the graphsResults folder in the app project directory.
 
+![img1](./images/7.png)
+
 ### Exit the Application
 
 To exit the application, select the option 8 to exit the application.
+
+![img1](./images/8.png)

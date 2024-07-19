@@ -98,9 +98,11 @@ ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way 
 ```scala
 directedGraphRef <- Ref.make(DirectedGraph[String]())
 ```
-The application allows to import either DOT or JSON file, which then update the graph state.
+The application allows to import either DOT or JSON file,at a location specified by the user directly in the terminal, which update the originally blank graph state. The other interactions are done by the user, who can add or remove edges, and all of them have input prompt that highlight these operations. 
 
-The other interactions is done through user Ref interactions, the latter is guided through the menus and can display vertices, edges to add or remove, and all of them have input prompt that highlight these operations. If he missclicked to "use existing graphs", the app still offer some flexibility to create a new graph. The app will provide immediate feedback on these actions, though some are minimized since we wanted to have each functions do have a single responsibility (addEdge is exclusively adding edge but don't return the new graph structure).
+Through the menu, ZIO uses combinators to handle possible human failures such as invalid keys or file path. The error is handled so that the system is still running instead of crashing.
+
+The data can persists in DOT and JSON format after saving it. 
 
 #### Error Handling
 When the user try to add already existing edges or remove non-existent ones, error is handled so that the system is still running instead of crashing.

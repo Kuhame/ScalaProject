@@ -35,7 +35,7 @@ This will start the application in the terminal. You can then follow the on-scre
 - List all edges in the graph
 - List neighbors of a specific vertex
 - Save the graph to a file (DOT format or JSON format)
-- Run graph algorithms (DFS, BFS, Topological Sort, Cycle Detection, Floyd Algorithm, Dijkstra Algorithm)
+- Run graph algorithms (Only DFS for now)
 - Exit the application
 
 You can also run the test and build the project by executing the following commands:
@@ -195,7 +195,7 @@ To remove edges from the graph, select the option 5 to remove edges and enter th
 
 ### Apply DFS Algorithm
 
-# TODO
+To apply the DFS algorithm to the graph, select the option 7 to run the DFS algorithm. The algorithm will be applied to the graph, and the result will be displayed on the screen.
 
 ### Save the Graph to a DOT and JSON File
 
@@ -204,4 +204,4 @@ The graph will be saved in the graphsResults folder in the app project directory
 
 ### Exit the Application
 
-To exit the application, select the option 7 to exit the application.
+To exit the application, select the option 8 to exit the application.

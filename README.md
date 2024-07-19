@@ -106,7 +106,7 @@ When satisfied, the user can save the `DirectedGraph` data, and it will persists
 
 At the end, we did not go implement all the way, however it is really possible to upscale the current environment with dedicated alternatives such as : 
 - Dedicated Database : We can think about storing graphs to a SQLite database (or similar) so that we have a centralized persistent graphs data where the user can query for specific ones.
-- Graphic User Interface : Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface that can be easily customized to fit our needs later on.
+- Graphic User Interface : Instead of an app terminal, we could try to go on API-based type, where the user will be entering a web server. This can enhance user experience with a cleaner user-friendly interface and providing a better state monitoring that can be easily customized.
 
 ## Testing
 

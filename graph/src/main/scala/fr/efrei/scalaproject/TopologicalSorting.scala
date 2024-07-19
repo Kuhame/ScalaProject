@@ -1,43 +1,42 @@
 package fr.efrei.scalaproject.graph
-import DFS._
-import DetectCycle._
-import scala.annotation.tailrec
 
 object TopologicalSorting {
-  def topologicalSort[V](graph: Graph[V]): Option[List[V]] = {
-    // Use DFS to detect cycles
-    val allVertices = graph.vertices.toList
-    val hasCycleDetected = allVertices.exists(vertex => DetectCycle.hasCycle(graph, vertex))
-    
-    // If a cycle is detected, topological sorting is not possible
-    if (hasCycleDetected) {
-      None
-    } else {
-      // Perform DFS to get the topological order
-      def dfsVisit(node: V, visited: Set[V], stack: List[V]): (Set[V], List[V]) = {
-        if (visited.contains(node)) {
-          (visited, stack)
-        } else {
-          val (newVisited, newStack) = graph.neighbors(node).foldLeft((visited + node, stack)) {
-            case ((vis, stk), neighbor) =>
-              val (nextVis, nextStk) = dfsVisit(neighbor, vis, stk)
-              (nextVis, nextStk)
-          }
-          (newVisited, node :: newStack)
-        }
-      }
 
-      val (visited, stack) = allVertices.foldLeft((Set[V](), List[V]())) {
-        case ((visited, stack), vertex) =>
-          if (visited.contains(vertex)) {
-            (visited, stack)
-          } else {
-            val (newVisited, newStack) = dfsVisit(vertex, visited, stack)
-            (newVisited, newStack)
-          }
+  def topologicalSort[V](graph: Graph[V]): Option[List[V]] = {
+    // Helper function to perform depth-first search and detect cycles
+    def dfsVisit(node: V, visited: Set[V], stack: List[V], tempMarks: Set[V]): (Set[V], List[V], Boolean) = {
+      if (tempMarks.contains(node)) {
+        // A cycle was detected
+        (visited, stack, true)
+      } else if (visited.contains(node)) {
+        // Node already processed
+        (visited, stack, false)
+      } else {
+        // Mark the node as temporarily visited
+        val newTempMarks = tempMarks + node
+        val (newVisited, newStack, hasCycle) = graph.neighbors(node).foldLeft((visited + node, stack, false)) {
+          case ((vis, stk, cycle), neighbor) =>
+            if (cycle) (vis, stk, cycle)
+            else {
+              val (nextVis, nextStk, nextCycle) = dfsVisit(neighbor, vis, stk, newTempMarks)
+              (nextVis, nextStk, nextCycle)
+            }
+        }
+        (newVisited, node :: newStack, hasCycle)
       }
-      
-      Some(stack.reverse)
     }
+
+    // Perform DFS from all vertices
+    val (visited, stack, hasCycle) = graph.vertices.foldLeft((Set[V](), List[V](), false)) {
+      case ((vis, stk, cycle), vertex) =>
+        if (vis.contains(vertex)) (vis, stk, cycle)
+        else {
+          val (newVis, newStk, newCycle) = dfsVisit(vertex, vis, stk, Set())
+          (newVis, newStk, cycle || newCycle)
+        }
+    }
+
+    if (hasCycle) None
+    else Some(stack.reverse)
   }
 }

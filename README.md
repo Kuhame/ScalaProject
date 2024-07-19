@@ -150,4 +150,58 @@ Here's an overview of the test coverage for each type of graph and algorithms:
 #### Graph Algorithms Tests:
 # TODO
 
-## Usage Examples
+## Usage Example
+
+Here's an example of how to use the application:
+
+### Start the Application
+
+To start the application, run the following command in the root directory of the project:
+
+```bash
+sbt run
+```
+
+This will start the application in the terminal.
+
+### Create a New Graph from a DOT File
+
+To create a new graph from a DOT file, select the option to use an existing graph and enter the path to the DOT file when prompted. 
+
+For example, to create a new graph from the `graph.dot` file, enter the following path:
+
+```bash
+C:\Users\Laure\Documents\graph.dot
+```
+
+The graph will be loaded from the file, and you can then perform operations on it.
+
+### Add Edges to the Graph
+
+To add edges to the graph, select the option 4 to add edges and enter the vertices for the edge when prompted.
+The edge will be added to the graph, and you can continue adding more edges.
+
+### List All Vertices in the Graph
+
+To list all vertices in the graph, select the option 1 to list all vertices. The vertices will be displayed on the screen.
+
+### List All Edges in the Graph
+
+To list all edges in the graph, select the option 2 to list all edges. The edges will be displayed on the screen.
+
+### Remove Edges from the Graph
+
+To remove edges from the graph, select the option 5 to remove edges and enter the vertices for the edge when prompted.
+
+### Apply DFS Algorithm
+
+# TODO
+
+### Save the Graph to a DOT and JSON File
+
+To save the graph to a DOT and JSON file, select the option 6 to save the graph.
+The graph will be saved in the graphsResults folder in the app project directory.
+
+### Exit the Application
+
+To exit the application, select the option 7 to exit the application.

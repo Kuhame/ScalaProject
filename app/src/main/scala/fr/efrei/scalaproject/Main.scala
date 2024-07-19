@@ -170,9 +170,9 @@ object Main extends ZIOAppDefault {
     case "1" => getAllVertices(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "2" => getAllEdges(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "3" => getNeighborsOfVertex(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
-    case "4" => addEdge(directedGraph) *> saveLoadedGraph(directedGraph, loadedFilePath) *> useExistingGraphMenu(directedGraph, loadedFilePath)
-    case "5" => removeEdge(directedGraph) *> saveLoadedGraph(directedGraph, loadedFilePath) *> useExistingGraphMenu(directedGraph, loadedFilePath)
-    case "6" => saveGraph(directedGraph)
+    case "4" => addEdge(directedGraph)  *> useExistingGraphMenu(directedGraph, loadedFilePath)
+    case "5" => removeEdge(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
+    case "6" => saveGraph(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "7" => performDFS(directedGraph) *> useExistingGraphMenu(directedGraph, loadedFilePath)
     case "8" => ZIO.succeed(())
     case _   => Console.printLine(s"Invalid choice: $choice").orDie *> useExistingGraphMenu(directedGraph, loadedFilePath)
@@ -180,17 +180,6 @@ object Main extends ZIOAppDefault {
 
   def displayGraph(directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] =
     directedGraph.get.flatMap(graph => Console.printLine(graph.toDot())).orDie
-
-  def saveLoadedGraph(directedGraph: Ref[DirectedGraph[String]], loadedFilePath: Ref[Option[String]]): UIO[Unit] =
-    loadedFilePath.get.flatMap {
-      case Some(path) =>
-        directedGraph.get.flatMap { graph =>
-          val dotFormat = graph.toDot()
-          ZIO.attempt(Files.writeString(Paths.get(path), dotFormat)).orDie *>
-            Console.printLine(s"Graph saved to $path").orDie
-        }
-      case None => Console.printLine("No file loaded to save").orDie
-    }
 
   // Handler of Menu A-1: What to Do?
   def getAllVertices(directedGraph: Ref[DirectedGraph[String]]): UIO[Unit] =
@@ -253,6 +242,9 @@ object Main extends ZIOAppDefault {
         Files.write(graphsDir.resolve("graph.dot"), dotFormat.getBytes)
         Files.write(graphsDir.resolve("graph.json"), jsonFormat.getBytes)
       }.orDie
+
+      _ <- Console.printLine("Graph saved successfully as DOT format to graph.dot.")
+      _ <- Console.printLine("Graph saved successfully as JSON format to graph.json.")
 
     } yield ()).orDie
 

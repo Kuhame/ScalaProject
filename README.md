@@ -103,7 +103,7 @@ The application has many interactions for changing it, as it allows to import ei
 
 Through the menus, ZIO uses combinators to handle possible human failures such as removing non-existent edges, invalid input keys, or writing a faulty import path. The error is handled so that the system is still running instead of crashing.
 
-When satisfied, the user can save the `DirectedGraph` data, and it will persists in DOT and JSON format, that can be edited later.
+When satisfied, the user can save the `DirectedGraph` data, and it will persists in DOT and JSON format that can be edited later.
 
 #### Future possible improvements
 We can still to upscale the current environment with dedicated alternatives such as : 

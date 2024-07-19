@@ -79,8 +79,14 @@ Each graph have an object companion that contains the apply method to create a n
 # TODO ADD ALGORITHMS DESCRIPTION
 
 ### State Management 
-The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
+The state management is done with the ZIO library. ZIO enforces the immutability of the code, in line with the functional programming principles. In order to reduce side effects, we use Immutable states that cannot be altered after creation, and changes must be made by creating a new state. The core of the project revolves around the `DirectedGraph` state, whih represents the graph structure.
 
+ZIO has a mutable state `Ref`, that can hold the DirectedGraph changes in a way that both provide functionnal purity and thread-safety (in case the app is operated with multiple concurrent users).
+
+```scala
+val initialGraph = DirectedGraph[String](Set(), Map())
+val graphState: UIO[GraphState[String]] = Ref.make(initialGraph).map(new GraphState(_))
+```
 
 
 The user is guided through the menus and the system ask which vertices, edges to add or remove, all of them have input prompt that highlight these operations. If he missclicked to "use existing graphs", the app still offer some flexibility to create a new graph. The app will provide immediate feedback on these actions, though some are minimized since we wanted to have each functions do have a single responsibility (addEdge is exclusively adding edge but don't return the new graph structure).

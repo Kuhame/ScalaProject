@@ -168,10 +168,10 @@ This will start the application in the terminal.
 
 To create a new graph from a DOT file, select the option to use an existing graph and enter the path to the DOT file when prompted. 
 
-For example, to create a new graph from the `graph.dot` file, enter the following path:
+For example, to create a new graph from the `graph.dot` file in the graphsResults folder, enter the following path:
 
 ```bash
-C:\Users\Laure\Documents\graph.dot
+app/src/main/scala/fr/efrei/scalaproject/graphsResults/graph.dot
 ```
 
 The graph will be loaded from the file, and you can then perform operations on it.

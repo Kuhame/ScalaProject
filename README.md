@@ -6,7 +6,7 @@ This project is a terminal-based application that allows users to create, edit, 
 
 The project is divided into two sub-projects:
 
-1. **Graph Data Structure**: The project includes a graph data structure library with various operations for creating, editing, and saving directed graphs, undirected graphs and weighted directed graphs. It also includes graph operations such as DFS, BFS, Topological Sort, Cycle Detection, Floyd Algorithm and Dijkstra Algorithm.
+1. **Graph Data Structure**: The project includes a graph data structure library with various operations for creating, editing, and saving directed graphs, undirected graphs and weighted directed graphs. It also includes graph operations such as DFS, BFS, Topological Sort, Cycle Detection and Dijkstra Algorithm.
 
 2. **ZIO Application Integration**: The graph data structure library is integrated into a ZIO application that provides a terminal-based interface for users to interact with the graph data structure. 
 **Currently, the app only support directed graphs**, but it can be easily extended to support other types of graphs.
@@ -35,7 +35,7 @@ This will start the application in the terminal. You can then follow the on-scre
 - List all edges in the graph
 - List neighbors of a specific vertex
 - Save the graph to a file (DOT format or JSON format)
-- Run graph algorithms (Only DFS for now)
+- Run graph algorithms (Only DFS for now in the terminal, to check other algorithms you can check the tests)
 - Exit the application
 
 You can also run the test and build the project by executing the following commands:
@@ -55,7 +55,7 @@ The graph data structure is implemented using an adjacency list representation, 
 
 For the design of the graph data structure, we have followed functional programming principles such as immutability. The graph data structure is designed to be immutable, meaning that once a graph is created, it cannot be modified. Instead, operations on the graph return a new graph with the desired changes.
 
-We have also implemented graph algorithms such as DFS, BFS, Topological Sort, Cycle Detection, Floyd Algorithm, and Dijkstra Algorithm. These algorithms are commonly used in graph theory and provide useful insights into the structure of a graph. 
+We have also implemented graph algorithms such as DFS, BFS, Topological Sort, Cycle Detection and Dijkstra Algorithm. These algorithms are commonly used in graph theory and provide useful insights into the structure of a graph. 
 For now, theses algorithms have been implemented and tested to work on directed graphs.
 
 #### Graph Classes and Traits 
